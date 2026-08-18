@@ -193,40 +193,86 @@ function iniciarEscaner() {
 
   const configuracion = {
 
-    fps: 10,
+  fps: 10,
 
-    qrbox: {
-      width: 280,
-      height: 180
-    },
+  qrbox: function(viewfinderWidth, viewfinderHeight) {
 
-    aspectRatio: 1.7777778,
+    const width =
+      Math.min(
+        viewfinderWidth * 0.90,
+        500
+      );
 
-    formatsToSupport: [
+    const height =
+      Math.min(
+        viewfinderHeight * 0.55,
+        300
+      );
 
-      Html5QrcodeSupportedFormats.CODE_128,
+    return {
+      width: Math.floor(width),
+      height: Math.floor(height)
+    };
 
-      Html5QrcodeSupportedFormats.CODE_39,
+  },
 
-      Html5QrcodeSupportedFormats.CODE_93,
+  aspectRatio: 1.7777778,
 
-      Html5QrcodeSupportedFormats.CODABAR,
+  formatsToSupport: [
 
-      Html5QrcodeSupportedFormats.EAN_13,
+    // ==============================
+    // CÓDIGOS 2D
+    // ==============================
 
-      Html5QrcodeSupportedFormats.EAN_8,
+    Html5QrcodeSupportedFormats.QR_CODE,
 
-      Html5QrcodeSupportedFormats.ITF,
+    Html5QrcodeSupportedFormats.DATA_MATRIX,
 
-      Html5QrcodeSupportedFormats.UPC_A,
+    Html5QrcodeSupportedFormats.PDF_417,
 
-      Html5QrcodeSupportedFormats.UPC_E,
+    Html5QrcodeSupportedFormats.AZTEC,
 
-      Html5QrcodeSupportedFormats.QR_CODE
+    Html5QrcodeSupportedFormats.MAXICODE,
 
-    ]
+    // ==============================
+    // CÓDIGOS DE BARRAS
+    // ==============================
 
-  };
+    Html5QrcodeSupportedFormats.CODE_128,
+
+    Html5QrcodeSupportedFormats.CODE_39,
+
+    Html5QrcodeSupportedFormats.CODE_93,
+
+    Html5QrcodeSupportedFormats.CODABAR,
+
+    Html5QrcodeSupportedFormats.ITF,
+
+    // ==============================
+    // EAN / UPC
+    // ==============================
+
+    Html5QrcodeSupportedFormats.EAN_13,
+
+    Html5QrcodeSupportedFormats.EAN_8,
+
+    Html5QrcodeSupportedFormats.UPC_A,
+
+    Html5QrcodeSupportedFormats.UPC_E,
+
+    Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+
+    // ==============================
+    // RSS / GS1
+    // ==============================
+
+    Html5QrcodeSupportedFormats.RSS_14,
+
+    Html5QrcodeSupportedFormats.RSS_EXPANDED
+
+  ]
+
+};
 
 
   scanner.start(
