@@ -1,12 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Escáner TG LOGISTICS</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <title>TG LOGISTICS - Escáner</title>
+
+
+  <!-- =====================================================
+       ZXING BROWSER
+       Motor de lectura de códigos de barras
+  ====================================================== -->
+
+  <script src="https://unpkg.com/@zxing/library@0.23.0/umd/index.min.js"></script>
+
+  <script src="https://unpkg.com/@zxing/browser@0.2.1/umd/zxing-browser.min.js"></script>
+
 
   <style>
 
@@ -14,113 +29,397 @@
       box-sizing: border-box;
     }
 
+
     body {
+
       margin: 0;
+
       padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #202124;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        #f4f6f8;
+
+      color:
+        #202124;
+
     }
+
 
     .contenedor {
-      max-width: 600px;
-      margin: auto;
+
+      max-width:
+        650px;
+
+      margin:
+        auto;
+
     }
+
 
     .tarjeta {
-      background: white;
-      padding: 22px;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+
+      background:
+        white;
+
+      padding:
+        24px;
+
+      border-radius:
+        18px;
+
+      box-shadow:
+        0 3px 15px
+        rgba(0,0,0,.12);
+
     }
+
 
     h1 {
-      text-align: center;
-      margin-top: 0;
+
+      text-align:
+        center;
+
+      margin-top:
+        0;
+
+      margin-bottom:
+        8px;
+
+      font-size:
+        32px;
+
     }
+
 
     .subtitulo {
-      text-align: center;
-      color: #5f6368;
-      margin-bottom: 25px;
+
+      text-align:
+        center;
+
+      color:
+        #5f6368;
+
+      font-size:
+        18px;
+
+      margin-bottom:
+        25px;
+
     }
 
-    #reader {
-      width: 100%;
-      overflow: hidden;
-      border-radius: 12px;
+
+    /* =====================================================
+       VIDEO
+    ====================================================== */
+
+    #video {
+
+      width:
+        100%;
+
+      height:
+        auto;
+
+      min-height:
+        300px;
+
+      max-height:
+        65vh;
+
+      object-fit:
+        cover;
+
+      background:
+        #111;
+
+      border-radius:
+        14px;
+
+      display:
+        block;
+
     }
+
+
+    .marco {
+
+      position:
+        relative;
+
+      width:
+        100%;
+
+      overflow:
+        hidden;
+
+      border-radius:
+        14px;
+
+      background:
+        #111;
+
+    }
+
+
+    .guia {
+
+      position:
+        absolute;
+
+      left:
+        8%;
+
+      right:
+        8%;
+
+      top:
+        42%;
+
+      height:
+        16%;
+
+      border:
+        3px solid
+        rgba(255,255,255,.85);
+
+      border-radius:
+        10px;
+
+      pointer-events:
+        none;
+
+    }
+
+
+    /* =====================================================
+       MENSAJES
+    ====================================================== */
 
     .mensaje {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 10px;
-      text-align: center;
+
+      margin-top:
+        18px;
+
+      padding:
+        15px;
+
+      border-radius:
+        12px;
+
+      text-align:
+        center;
+
+      line-height:
+        1.5;
+
     }
+
 
     .info {
-      background: #e8f0fe;
-      color: #174ea6;
+
+      background:
+        #e8f0fe;
+
+      color:
+        #174ea6;
+
     }
+
 
     .exito {
-      background: #e6f4ea;
-      color: #137333;
-      font-size: 18px;
-      font-weight: bold;
+
+      background:
+        #e6f4ea;
+
+      color:
+        #137333;
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
+
     }
+
 
     .error {
-      background: #fce8e6;
-      color: #c5221f;
+
+      background:
+        #fce8e6;
+
+      color:
+        #c5221f;
+
     }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 9px;
-      background: #1a73e8;
-      color: white;
-      font-size: 17px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: .9;
-    }
 
     #trackingDetectado {
-      word-break: break-all;
-      margin-top: 8px;
+
+      margin-top:
+        10px;
+
+      font-size:
+        22px;
+
+      word-break:
+        break-all;
+
+    }
+
+
+    #tipoDetectado {
+
+      margin-top:
+        8px;
+
+      font-size:
+        14px;
+
+      font-weight:
+        normal;
+
+      opacity:
+        .8;
+
+    }
+
+
+    /* =====================================================
+       BOTONES
+    ====================================================== */
+
+    button {
+
+      width:
+        100%;
+
+      padding:
+        15px;
+
+      margin-top:
+        15px;
+
+      border:
+        none;
+
+      border-radius:
+        10px;
+
+      background:
+        #1a73e8;
+
+      color:
+        white;
+
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+
+    }
+
+
+    button:hover {
+
+      opacity:
+        .9;
+
+    }
+
+
+    button:disabled {
+
+      opacity:
+        .55;
+
+      cursor:
+        not-allowed;
+
+    }
+
+
+    #botonReintentar {
+
+      display:
+        none;
+
+    }
+
+
+    .instrucciones {
+
+      margin-top:
+        18px;
+
+      color:
+        #5f6368;
+
+      text-align:
+        center;
+
+      font-size:
+        14px;
+
+      line-height:
+        1.5;
+
     }
 
   </style>
+
 </head>
+
 
 <body>
 
+
 <div class="contenedor">
+
 
   <div class="tarjeta">
 
-    <h1>📦 TG LOGISTICS</h1>
+
+    <h1>
+      📦 TG LOGISTICS
+    </h1>
+
 
     <p class="subtitulo">
       Escáner de tracking
     </p>
 
-    <div
-      id="reader">
+
+    <div class="marco">
+
+      <video
+        id="video"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+      <div class="guia"></div>
+
     </div>
+
 
     <div
       id="mensaje"
       class="mensaje info"
     >
-      📷 Solicita permiso para usar la cámara.
+      📷 Preparando cámara...
     </div>
+
 
     <div
       id="resultado"
@@ -128,212 +427,452 @@
       style="display:none;"
     >
 
-      ✅ Tracking detectado
+      ✅ Código leído correctamente
 
-      <div id="trackingDetectado"></div>
+
+      <div
+        id="trackingDetectado"
+      ></div>
+
+
+      <div
+        id="tipoDetectado"
+      ></div>
 
     </div>
+
 
     <button
       id="botonReintentar"
       onclick="iniciarEscaner()"
-      style="display:none;"
     >
       📷 Escanear nuevamente
     </button>
 
+
+    <p class="instrucciones">
+
+      Coloca el código dentro del recuadro.
+      <br>
+
+      Mantén el teléfono estable y evita reflejos
+      sobre la etiqueta.
+
+    </p>
+
+
   </div>
+
 
 </div>
 
 
+
 <script>
 
-let scanner = null;
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let codeReader = null;
+
+let controlesEscaner = null;
+
 let escaneando = false;
+
 let resultadoEnviado = false;
+
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const video =
+  document.getElementById(
+    "video"
+  );
+
+const mensaje =
+  document.getElementById(
+    "mensaje"
+  );
+
+const resultado =
+  document.getElementById(
+    "resultado"
+  );
+
+const trackingDetectado =
+  document.getElementById(
+    "trackingDetectado"
+  );
+
+const tipoDetectado =
+  document.getElementById(
+    "tipoDetectado"
+  );
+
+const botonReintentar =
+  document.getElementById(
+    "botonReintentar"
+  );
+
+
+/* =====================================================
+   MENSAJE
+===================================================== */
+
+function mostrarMensaje(
+  texto,
+  tipo
+) {
+
+  mensaje.className =
+    "mensaje " +
+    tipo;
+
+  mensaje.innerHTML =
+    texto;
+
+}
+
+
+/* =====================================================
+   FORMATO LEGIBLE
+===================================================== */
+
+function nombreFormato(
+  formato
+) {
+
+  if (!formato) {
+    return "";
+  }
+
+
+  const nombres = {
+
+    "AZTEC":
+      "Aztec",
+
+    "CODABAR":
+      "Codabar",
+
+    "CODE_39":
+      "Code 39",
+
+    "CODE_93":
+      "Code 93",
+
+    "CODE_128":
+      "Code 128",
+
+    "DATA_MATRIX":
+      "Data Matrix",
+
+    "EAN_8":
+      "EAN-8",
+
+    "EAN_13":
+      "EAN-13",
+
+    "ITF":
+      "ITF",
+
+    "MAXICODE":
+      "MaxiCode",
+
+    "PDF_417":
+      "PDF417",
+
+    "QR_CODE":
+      "QR",
+
+    "RSS_14":
+      "RSS-14",
+
+    "RSS_EXPANDED":
+      "RSS Expanded",
+
+    "UPC_A":
+      "UPC-A",
+
+    "UPC_E":
+      "UPC-E",
+
+    "UPC_EAN_EXTENSION":
+      "UPC/EAN Extension"
+
+  };
+
+
+  return
+    nombres[formato]
+    || formato;
+
+}
 
 
 /* =====================================================
    INICIAR ESCÁNER
 ===================================================== */
 
-function iniciarEscaner() {
+async function iniciarEscaner() {
+
 
   if (escaneando) {
     return;
   }
 
-  resultadoEnviado = false;
 
-  document
-    .getElementById("resultado")
-    .style
-    .display = "none";
-
-  document
-    .getElementById("botonReintentar")
-    .style
-    .display = "none";
-
-  document
-    .getElementById("mensaje")
-    .className =
-      "mensaje info";
-
-  document
-    .getElementById("mensaje")
-    .innerHTML =
-      "📷 Solicitando acceso a la cámara...";
+  resultadoEnviado =
+    false;
 
 
-  scanner =
-    new Html5Qrcode("reader");
+  resultado.style.display =
+    "none";
 
 
-  const configuracion = {
+  botonReintentar.style.display =
+    "none";
 
-  fps: 10,
 
-  qrbox: function(viewfinderWidth, viewfinderHeight) {
+  mostrarMensaje(
+    "📷 Solicitando acceso a la cámara...",
+    "info"
+  );
 
-    const width =
-      Math.min(
-        viewfinderWidth * 0.90,
-        500
+
+  try {
+
+
+    /* =================================================
+       VERIFICAR ZXING
+    ================================================== */
+
+    if (
+      typeof ZXingBrowser ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "No se pudo cargar el motor ZXing."
       );
 
-    const height =
-      Math.min(
-        viewfinderHeight * 0.55,
-        300
+    }
+
+
+    if (
+      typeof ZXing ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "No se pudo cargar la biblioteca ZXing."
       );
 
-    return {
-      width: Math.floor(width),
-      height: Math.floor(height)
+    }
+
+
+    /* =================================================
+       HINTS
+       FORMATO MULTI-CÓDIGO
+    ================================================== */
+
+    const hints =
+      new Map();
+
+
+    const formatos = [
+
+      ZXing.BarcodeFormat.AZTEC,
+
+      ZXing.BarcodeFormat.CODABAR,
+
+      ZXing.BarcodeFormat.CODE_39,
+
+      ZXing.BarcodeFormat.CODE_93,
+
+      ZXing.BarcodeFormat.CODE_128,
+
+      ZXing.BarcodeFormat.DATA_MATRIX,
+
+      ZXing.BarcodeFormat.EAN_8,
+
+      ZXing.BarcodeFormat.EAN_13,
+
+      ZXing.BarcodeFormat.ITF,
+
+      ZXing.BarcodeFormat.MAXICODE,
+
+      ZXing.BarcodeFormat.PDF_417,
+
+      ZXing.BarcodeFormat.QR_CODE,
+
+      ZXing.BarcodeFormat.RSS_14,
+
+      ZXing.BarcodeFormat.RSS_EXPANDED,
+
+      ZXing.BarcodeFormat.UPC_A,
+
+      ZXing.BarcodeFormat.UPC_E
+
+    ];
+
+
+    hints.set(
+
+      ZXing.DecodeHintType.POSSIBLE_FORMATS,
+
+      formatos
+
+    );
+
+
+    /* =================================================
+       TRY HARDER
+       MUY IMPORTANTE PARA UPS / USPS
+    ================================================== */
+
+    hints.set(
+
+      ZXing.DecodeHintType.TRY_HARDER,
+
+      true
+
+    );
+
+
+    /* =================================================
+       CREAR LECTOR
+    ================================================== */
+
+    codeReader =
+      new ZXingBrowser.BrowserMultiFormatReader(
+        hints,
+        {
+          delayBetweenScanAttempts: 150
+        }
+      );
+
+
+    /* =================================================
+       CÁMARA TRASERA
+    ================================================== */
+
+    const constraints = {
+
+      video: {
+
+        facingMode: {
+          ideal:
+            "environment"
+        },
+
+        width: {
+          ideal:
+            1920
+        },
+
+        height: {
+          ideal:
+            1080
+        }
+
+      }
+
     };
 
-  },
 
-  aspectRatio: 1.7777778,
+    /* =================================================
+       INICIAR VIDEO
+    ================================================== */
 
-  formatsToSupport: [
+    controlesEscaner =
+      await codeReader.decodeFromConstraints(
 
-    // ==============================
-    // CÓDIGOS 2D
-    // ==============================
+        constraints,
 
-    Html5QrcodeSupportedFormats.QR_CODE,
+        video,
 
-    Html5QrcodeSupportedFormats.DATA_MATRIX,
-
-    Html5QrcodeSupportedFormats.PDF_417,
-
-    Html5QrcodeSupportedFormats.AZTEC,
-
-    Html5QrcodeSupportedFormats.MAXICODE,
-
-    // ==============================
-    // CÓDIGOS DE BARRAS
-    // ==============================
-
-    Html5QrcodeSupportedFormats.CODE_128,
-
-    Html5QrcodeSupportedFormats.CODE_39,
-
-    Html5QrcodeSupportedFormats.CODE_93,
-
-    Html5QrcodeSupportedFormats.CODABAR,
-
-    Html5QrcodeSupportedFormats.ITF,
-
-    // ==============================
-    // EAN / UPC
-    // ==============================
-
-    Html5QrcodeSupportedFormats.EAN_13,
-
-    Html5QrcodeSupportedFormats.EAN_8,
-
-    Html5QrcodeSupportedFormats.UPC_A,
-
-    Html5QrcodeSupportedFormats.UPC_E,
-
-    Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
-
-    // ==============================
-    // RSS / GS1
-    // ==============================
-
-    Html5QrcodeSupportedFormats.RSS_14,
-
-    Html5QrcodeSupportedFormats.RSS_EXPANDED
-
-  ]
-
-};
+        function(
+          resultadoLectura,
+          error
+        ) {
 
 
-  scanner.start(
+          if (
+            !resultadoLectura
+          ) {
 
-  {
-    facingMode: "environment"
-  },
+            return;
 
-      configuracion,
+          }
 
-      codigoDetectado,
 
-      errorLectura
+          codigoDetectado(
+            resultadoLectura
+          );
 
-    )
+        }
 
-    .then(function() {
+      );
 
-      escaneando = true;
 
-      document
-        .getElementById("mensaje")
-        .className =
-          "mensaje info";
+    escaneando =
+      true;
 
-      document
-        .getElementById("mensaje")
-        .innerHTML =
-          "📷 Apunta la cámara al código de barras del paquete.";
 
-    })
+    mostrarMensaje(
 
-    .catch(function(error) {
+      "📷 Apunta la cámara al código de barras o código 2D.",
 
-      escaneando = false;
+      "info"
 
-      document
-        .getElementById("mensaje")
-        .className =
-          "mensaje error";
+    );
 
-      document
-        .getElementById("mensaje")
-        .innerHTML =
 
-          "❌ No se pudo iniciar la cámara." +
+  }
 
-          "<br><br>" +
+  catch (error) {
 
-          "Verifica que hayas permitido el acceso a la cámara." +
 
-          "<br><br>" +
+    escaneando =
+      false;
 
-          error;
 
-      document
-        .getElementById("botonReintentar")
-        .style
-        .display = "block";
+    console.error(
+      "Error ZXing:",
+      error
+    );
 
-    });
+
+    mostrarMensaje(
+
+      "❌ No se pudo iniciar la cámara." +
+
+      "<br><br>" +
+
+      "Verifica que hayas permitido el acceso a la cámara." +
+
+      "<br><br>" +
+
+      (
+        error &&
+        error.message
+          ? error.message
+          : String(error)
+      ),
+
+      "error"
+
+    );
+
+
+    botonReintentar.style.display =
+      "block";
+
+  }
 
 }
 
@@ -343,59 +882,111 @@ function iniciarEscaner() {
 ===================================================== */
 
 function codigoDetectado(
-  decodedText,
-  decodedResult
+  resultadoLectura
 ) {
 
-  if (resultadoEnviado) {
+
+  if (
+    resultadoEnviado
+  ) {
+
     return;
+
   }
 
-  resultadoEnviado = true;
+
+  if (
+    !resultadoLectura
+  ) {
+
+    return;
+
+  }
+
 
   const tracking =
-    String(decodedText || "")
-      .trim();
+    String(
+      resultadoLectura.getText()
+      || ""
+    )
+    .trim();
+
 
   if (!tracking) {
 
-    resultadoEnviado = false;
-
     return;
+
   }
 
+
+  /* =================================================
+     EVITAR RESULTADOS EXTRAÑOS
+  ================================================== */
+
+  if (
+    tracking.length < 3
+  ) {
+
+    return;
+
+  }
+
+
+  resultadoEnviado =
+    true;
+
+
+  const formato =
+    resultadoLectura
+      .getBarcodeFormat();
+
+
+  const formatoNombre =
+    nombreFormato(
+      formato
+    );
+
+
+  /* =================================================
+     DETENER CÁMARA
+  ================================================== */
 
   detenerEscaner();
 
 
-  document
-    .getElementById("trackingDetectado")
+  /* =================================================
+     MOSTRAR RESULTADO
+  ================================================== */
+
+  trackingDetectado
     .textContent =
       tracking;
 
 
-  document
-    .getElementById("resultado")
-    .style
-    .display = "block";
+  tipoDetectado
+    .textContent =
+      formatoNombre
+        ? "Formato: " +
+          formatoNombre
+        : "";
 
 
-  document
-    .getElementById("mensaje")
-    .className =
-      "mensaje exito";
-
-  document
-    .getElementById("mensaje")
-    .innerHTML =
-      "✅ Código leído correctamente.";
+  resultado.style.display =
+    "block";
 
 
-  /*
-   * Más adelante utilizaremos este mismo
-   * mecanismo para devolver el tracking
-   * automáticamente al Panel administrativo.
-   */
+  mostrarMensaje(
+
+    "✅ Código leído correctamente.",
+
+    "exito"
+
+  );
+
+
+  /* =================================================
+     DEVOLVER AL PANEL ADMINISTRATIVO
+  ================================================== */
 
   if (
     window.opener &&
@@ -405,6 +996,7 @@ function codigoDetectado(
     window.opener.postMessage(
 
       {
+
         tipo:
           "TRACKING_ESCANEADO",
 
@@ -419,21 +1011,6 @@ function codigoDetectado(
 
   }
 
-}
-
-
-/* =====================================================
-   ERROR DE LECTURA
-===================================================== */
-
-function errorLectura(error) {
-
-  /*
-   * No mostramos cada error de lectura.
-   *
-   * El escáner genera muchos mensajes mientras
-   * busca un código y eso es normal.
-   */
 
 }
 
@@ -444,28 +1021,100 @@ function errorLectura(error) {
 
 function detenerEscaner() {
 
+
   if (
-    !scanner ||
-    !escaneando
+    codeReader
   ) {
 
-    return;
+    try {
+
+      codeReader.reset();
+
+    }
+
+    catch(error) {
+
+      console.error(
+        "Error al detener ZXing:",
+        error
+      );
+
+    }
+
   }
 
-  scanner
-    .stop()
-    .then(function() {
 
-      escaneando = false;
+  if (
+    controlesEscaner
+  ) {
 
-    })
-    .catch(function() {
+    try {
 
-      escaneando = false;
+      if (
+        typeof controlesEscaner.stop ===
+        "function"
+      ) {
 
-    });
+        controlesEscaner.stop();
+
+      }
+
+    }
+
+    catch(error) {
+
+      console.error(
+        "Error al detener controles:",
+        error
+      );
+
+    }
+
+  }
+
+
+  if (
+    video.srcObject
+  ) {
+
+    const tracks =
+      video.srcObject
+        .getTracks();
+
+
+    tracks.forEach(
+      function(track) {
+
+        track.stop();
+
+      }
+    );
+
+
+    video.srcObject =
+      null;
+
+  }
+
+
+  escaneando =
+    false;
 
 }
+
+
+/* =====================================================
+   LIMPIAR AL CERRAR / SALIR
+===================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  function() {
+
+    detenerEscaner();
+
+  }
+);
 
 
 /* =====================================================
@@ -483,5 +1132,7 @@ window.addEventListener(
 
 </script>
 
+
 </body>
+
 </html>
