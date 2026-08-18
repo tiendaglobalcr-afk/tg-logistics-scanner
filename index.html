@@ -888,106 +888,75 @@ function codigoDetectado(
   if (
     resultadoEnviado
   ) {
-
     return;
-
   }
-
 
   if (
     !resultadoLectura
   ) {
-
     return;
-
   }
-
 
   const tracking =
     String(
-      resultadoLectura.getText()
-      || ""
-    )
-    .trim();
-
+      resultadoLectura.getText() || ""
+    ).trim();
 
   if (!tracking) {
-
     return;
-
   }
-
-
-  /*
-   * Evitar lecturas demasiado cortas
-   */
 
   if (
     tracking.length < 3
   ) {
-
     return;
-
   }
 
-
-  resultadoEnviado =
-    true;
+  resultadoEnviado = true;
 
 
-  /*
-   * Obtener formato
-   */
+  /* =================================================
+     OBTENER FORMATO
+  ================================================= */
 
   const formato =
-    resultadoLectura
-      .getBarcodeFormat();
-
+    resultadoLectura.getBarcodeFormat();
 
   const formatoNombre =
-    nombreFormato(
-      formato
-    );
+    nombreFormato(formato);
 
 
-  /*
-   * Detener cámara
-   */
+  /* =================================================
+     DETENER CÁMARA
+  ================================================= */
 
   detenerEscaner();
 
 
-  /*
-   * Mostrar resultado
-   */
+  /* =================================================
+     MOSTRAR RESULTADO
+  ================================================= */
 
-  trackingDetectado
-    .textContent =
-      tracking;
+  trackingDetectado.textContent =
+    tracking;
 
-
-  tipoDetectado
-    .textContent =
-      formatoNombre
-        ? "Formato: " +
-          formatoNombre
-        : "";
-
+  tipoDetectado.textContent =
+    formatoNombre
+      ? "Formato: " + formatoNombre
+      : "";
 
   resultado.style.display =
     "block";
 
 
-  /*
-   * Buscar sesión enviada por
-   * el Panel administrativo
-   */
+  /* =================================================
+     OBTENER ID DE SESIÓN
+  ================================================= */
 
   const parametros =
     new URLSearchParams(
       window.location.search
     );
-
 
   const idSesion =
     parametros.get(
@@ -995,56 +964,35 @@ function codigoDetectado(
     );
 
 
-  /*
-   * Si existe una sesión,
-   * enviar el tracking a TG LOGISTICS
-   */
+  /* =================================================
+     ENVIAR A TG LOGISTICS
+  ================================================= */
 
-  if (
-    idSesion
-  ) {
+  if (idSesion) {
 
     mostrarMensaje(
-
       "⏳ Enviando tracking a TG LOGISTICS...",
-
       "info"
-
     );
-
 
     enviarTrackingASistema(
-
       idSesion,
-
       tracking
-
     );
 
-  }
-
-  else {
-
-    /*
-     * Si el lector se abre directamente,
-     * funciona como antes.
-     */
+  } else {
 
     mostrarMensaje(
-
       "✅ Código leído correctamente.",
-
       "exito"
-
     );
 
   }
 
 
-  /*
-   * Mantener compatibilidad con
-   * ventanas abiertas desde el Panel
-   */
+  /* =================================================
+     COMPATIBILIDAD CON VENTANA PADRE
+  ================================================= */
 
   if (
     window.opener &&
@@ -1054,13 +1002,11 @@ function codigoDetectado(
     window.opener.postMessage(
 
       {
-
         tipo:
           "TRACKING_ESCANEADO",
 
         tracking:
           tracking
-
       },
 
       "*"
@@ -1086,29 +1032,21 @@ function enviarTrackingASistema(
 
 
   const url =
-
     urlSistema +
-
     "?accion=recibirTracking" +
-
     "&idSesion=" +
-
     encodeURIComponent(
       idSesion
     ) +
-
     "&tracking=" +
-
     encodeURIComponent(
       tracking
     );
 
 
   /*
-   * Enviar mediante una imagen invisible.
-   *
-   * Esto evita problemas de CORS entre
-   * GitHub Pages y Apps Script.
+   * Solicitud invisible.
+   * No modifica el lector ni la cámara.
    */
 
   const imagen =
@@ -1119,11 +1057,8 @@ function enviarTrackingASistema(
     function() {
 
       mostrarMensaje(
-
         "✅ Tracking enviado correctamente a TG LOGISTICS.",
-
         "exito"
-
       );
 
     };
@@ -1132,18 +1067,9 @@ function enviarTrackingASistema(
   imagen.onerror =
     function() {
 
-      /*
-       * No asumimos que falló.
-       * La computadora confirmará si
-       * recibió el tracking.
-       */
-
       mostrarMensaje(
-
         "📦 Tracking enviado. Esperando confirmación...",
-
         "info"
-
       );
 
     };
