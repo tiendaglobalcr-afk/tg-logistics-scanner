@@ -885,7 +885,6 @@ function codigoDetectado(
   resultadoLectura
 ) {
 
-
   if (
     resultadoEnviado
   ) {
@@ -919,9 +918,9 @@ function codigoDetectado(
   }
 
 
-  /* =================================================
-     EVITAR RESULTADOS EXTRAÑOS
-  ================================================== */
+  /*
+   * Evitar lecturas demasiado cortas
+   */
 
   if (
     tracking.length < 3
@@ -936,6 +935,10 @@ function codigoDetectado(
     true;
 
 
+  /*
+   * Obtener formato
+   */
+
   const formato =
     resultadoLectura
       .getBarcodeFormat();
@@ -947,16 +950,16 @@ function codigoDetectado(
     );
 
 
-  /* =================================================
-     DETENER CÁMARA
-  ================================================== */
+  /*
+   * Detener cámara
+   */
 
   detenerEscaner();
 
 
-  /* =================================================
-     MOSTRAR RESULTADO
-  ================================================== */
+  /*
+   * Mostrar resultado
+   */
 
   trackingDetectado
     .textContent =
@@ -975,18 +978,73 @@ function codigoDetectado(
     "block";
 
 
-  mostrarMensaje(
+  /*
+   * Buscar sesión enviada por
+   * el Panel administrativo
+   */
 
-    "✅ Código leído correctamente.",
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
 
-    "exito"
 
-  );
+  const idSesion =
+    parametros.get(
+      "idSesion"
+    );
 
 
-  /* =================================================
-     DEVOLVER AL PANEL ADMINISTRATIVO
-  ================================================== */
+  /*
+   * Si existe una sesión,
+   * enviar el tracking a TG LOGISTICS
+   */
+
+  if (
+    idSesion
+  ) {
+
+    mostrarMensaje(
+
+      "⏳ Enviando tracking a TG LOGISTICS...",
+
+      "info"
+
+    );
+
+
+    enviarTrackingASistema(
+
+      idSesion,
+
+      tracking
+
+    );
+
+  }
+
+  else {
+
+    /*
+     * Si el lector se abre directamente,
+     * funciona como antes.
+     */
+
+    mostrarMensaje(
+
+      "✅ Código leído correctamente.",
+
+      "exito"
+
+    );
+
+  }
+
+
+  /*
+   * Mantener compatibilidad con
+   * ventanas abiertas desde el Panel
+   */
 
   if (
     window.opener &&
@@ -1011,6 +1069,88 @@ function codigoDetectado(
 
   }
 
+}
+
+
+/* =====================================================
+   ENVIAR TRACKING A TG LOGISTICS
+===================================================== */
+
+function enviarTrackingASistema(
+  idSesion,
+  tracking
+) {
+
+  const urlSistema =
+    "https://script.google.com/macros/s/AKfycbyAN1rEqpbmtgyrcv0o1pJKAm3ZrAgFxQdP7EMDHy-6Zx_iQSF7hTtgj6fgGgtpyiFIvw/exec";
+
+
+  const url =
+
+    urlSistema +
+
+    "?accion=recibirTracking" +
+
+    "&idSesion=" +
+
+    encodeURIComponent(
+      idSesion
+    ) +
+
+    "&tracking=" +
+
+    encodeURIComponent(
+      tracking
+    );
+
+
+  /*
+   * Enviar mediante una imagen invisible.
+   *
+   * Esto evita problemas de CORS entre
+   * GitHub Pages y Apps Script.
+   */
+
+  const imagen =
+    new Image();
+
+
+  imagen.onload =
+    function() {
+
+      mostrarMensaje(
+
+        "✅ Tracking enviado correctamente a TG LOGISTICS.",
+
+        "exito"
+
+      );
+
+    };
+
+
+  imagen.onerror =
+    function() {
+
+      /*
+       * No asumimos que falló.
+       * La computadora confirmará si
+       * recibió el tracking.
+       */
+
+      mostrarMensaje(
+
+        "📦 Tracking enviado. Esperando confirmación...",
+
+        "info"
+
+      );
+
+    };
+
+
+  imagen.src =
+    url;
 
 }
 
