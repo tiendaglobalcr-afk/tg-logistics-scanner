@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Escáner TG LOGISTICS</title>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #202124;
+    }
+
+    .contenedor {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .tarjeta {
+      background: white;
+      padding: 22px;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .subtitulo {
+      text-align: center;
+      color: #5f6368;
+      margin-bottom: 25px;
+    }
+
+    #reader {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .mensaje {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .info {
+      background: #e8f0fe;
+      color: #174ea6;
+    }
+
+    .exito {
+      background: #e6f4ea;
+      color: #137333;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .error {
+      background: #fce8e6;
+      color: #c5221f;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 9px;
+      background: #1a73e8;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    #trackingDetectado {
+      word-break: break-all;
+      margin-top: 8px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+  <div class="tarjeta">
+
+    <h1>📦 TG LOGISTICS</h1>
+
+    <p class="subtitulo">
+      Escáner de tracking
+    </p>
+
+    <div
+      id="reader">
+    </div>
+
+    <div
+      id="mensaje"
+      class="mensaje info"
+    >
+      📷 Solicita permiso para usar la cámara.
+    </div>
+
+    <div
+      id="resultado"
+      class="mensaje exito"
+      style="display:none;"
+    >
+
+      ✅ Tracking detectado
+
+      <div id="trackingDetectado"></div>
+
+    </div>
+
+    <button
+      id="botonReintentar"
+      onclick="iniciarEscaner()"
+      style="display:none;"
+    >
+      📷 Escanear nuevamente
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let scanner = null;
+let escaneando = false;
+let resultadoEnviado = false;
+
+
+/* =====================================================
+   INICIAR ESCÁNER
+===================================================== */
+
+function iniciarEscaner() {
+
+  if (escaneando) {
+    return;
+  }
+
+  resultadoEnviado = false;
+
+  document
+    .getElementById("resultado")
+    .style
+    .display = "none";
+
+  document
+    .getElementById("botonReintentar")
+    .style
+    .display = "none";
+
+  document
+    .getElementById("mensaje")
+    .className =
+      "mensaje info";
+
+  document
+    .getElementById("mensaje")
+    .innerHTML =
+      "📷 Solicitando acceso a la cámara...";
+
+
+  scanner =
+    new Html5Qrcode("reader");
+
+
+  const configuracion = {
+
+    fps: 10,
+
+    qrbox: {
+      width: 280,
+      height: 180
+    },
+
+    aspectRatio: 1.7777778,
+
+    formatsToSupport: [
+
+      Html5QrcodeSupportedFormats.CODE_128,
+
+      Html5QrcodeSupportedFormats.CODE_39,
+
+      Html5QrcodeSupportedFormats.CODE_93,
+
+      Html5QrcodeSupportedFormats.CODABAR,
+
+      Html5QrcodeSupportedFormats.EAN_13,
+
+      Html5QrcodeSupportedFormats.EAN_8,
+
+      Html5QrcodeSupportedFormats.ITF,
+
+      Html5QrcodeSupportedFormats.UPC_A,
+
+      Html5QrcodeSupportedFormats.UPC_E,
+
+      Html5QrcodeSupportedFormats.QR_CODE
+
+    ]
+
+  };
+
+
+  scanner
+    .start(
+
+      {
+        facingMode: {
+          ideal: "environment"
+        }
+      },
+
+      configuracion,
+
+      codigoDetectado,
+
+      errorLectura
+
+    )
+
+    .then(function() {
+
+      escaneando = true;
+
+      document
+        .getElementById("mensaje")
+        .className =
+          "mensaje info";
+
+      document
+        .getElementById("mensaje")
+        .innerHTML =
+          "📷 Apunta la cámara al código de barras del paquete.";
+
+    })
+
+    .catch(function(error) {
+
+      escaneando = false;
+
+      document
+        .getElementById("mensaje")
+        .className =
+          "mensaje error";
+
+      document
+        .getElementById("mensaje")
+        .innerHTML =
+
+          "❌ No se pudo iniciar la cámara." +
+
+          "<br><br>" +
+
+          "Verifica que hayas permitido el acceso a la cámara." +
+
+          "<br><br>" +
+
+          error;
+
+      document
+        .getElementById("botonReintentar")
+        .style
+        .display = "block";
+
+    });
+
+}
+
+
+/* =====================================================
+   CÓDIGO DETECTADO
+===================================================== */
+
+function codigoDetectado(
+  decodedText,
+  decodedResult
+) {
+
+  if (resultadoEnviado) {
+    return;
+  }
+
+  resultadoEnviado = true;
+
+  const tracking =
+    String(decodedText || "")
+      .trim();
+
+  if (!tracking) {
+
+    resultadoEnviado = false;
+
+    return;
+  }
+
+
+  detenerEscaner();
+
+
+  document
+    .getElementById("trackingDetectado")
+    .textContent =
+      tracking;
+
+
+  document
+    .getElementById("resultado")
+    .style
+    .display = "block";
+
+
+  document
+    .getElementById("mensaje")
+    .className =
+      "mensaje exito";
+
+  document
+    .getElementById("mensaje")
+    .innerHTML =
+      "✅ Código leído correctamente.";
+
+
+  /*
+   * Más adelante utilizaremos este mismo
+   * mecanismo para devolver el tracking
+   * automáticamente al Panel administrativo.
+   */
+
+  if (
+    window.opener &&
+    !window.opener.closed
+  ) {
+
+    window.opener.postMessage(
+
+      {
+        tipo:
+          "TRACKING_ESCANEADO",
+
+        tracking:
+          tracking
+
+      },
+
+      "*"
+
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   ERROR DE LECTURA
+===================================================== */
+
+function errorLectura(error) {
+
+  /*
+   * No mostramos cada error de lectura.
+   *
+   * El escáner genera muchos mensajes mientras
+   * busca un código y eso es normal.
+   */
+
+}
+
+
+/* =====================================================
+   DETENER ESCÁNER
+===================================================== */
+
+function detenerEscaner() {
+
+  if (
+    !scanner ||
+    !escaneando
+  ) {
+
+    return;
+  }
+
+  scanner
+    .stop()
+    .then(function() {
+
+      escaneando = false;
+
+    })
+    .catch(function() {
+
+      escaneando = false;
+
+    });
+
+}
+
+
+/* =====================================================
+   INICIAR AUTOMÁTICAMENTE
+===================================================== */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    iniciarEscaner();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
